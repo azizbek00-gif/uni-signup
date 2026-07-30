@@ -41,6 +41,7 @@ export default function GoalsPage() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from browser-only storage
       if (raw) setPosts(JSON.parse(raw));
     } catch {
       // ignore

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { SessionProvider as NextAuthSessionProvider } from "next-auth/react";
 import { SessionProvider } from "@/lib/session";
 import Background from "@/components/Background";
 
@@ -37,10 +38,12 @@ export default function RootLayout({
           overflowX: "hidden",
         }}
       >
-        <SessionProvider>
-          <Background />
-          {children}
-        </SessionProvider>
+        <NextAuthSessionProvider>
+          <SessionProvider>
+            <Background />
+            {children}
+          </SessionProvider>
+        </NextAuthSessionProvider>
       </body>
     </html>
   );

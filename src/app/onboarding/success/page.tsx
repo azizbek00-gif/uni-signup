@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession as useNextAuthSession } from "next-auth/react";
 import { Check, CheckCircle2, Fingerprint, Sparkles } from "lucide-react";
 import { styles } from "@/lib/styles";
 import { C } from "@/lib/tokens";
@@ -22,7 +23,8 @@ const CONFETTI = Array.from({ length: 46 }, (_, i) => ({
 
 export default function SuccessPage() {
   const router = useRouter();
-  const { user, setUser, lang, setLang, ready } = useSession();
+  const { update } = useNextAuthSession();
+  const { user, lang, setLang, ready } = useSession();
   const t = T[lang];
 
   useEffect(() => {
@@ -35,12 +37,17 @@ export default function SuccessPage() {
   const raf = useRef<number | null>(null);
   const start = useRef(0);
 
-  const onDone = () => {
-    setUser({ onboarded: true });
-    router.push("/dashboard");
+  const onDone = async () => {
+    try {
+      await fetch("/api/user/complete", { method: "POST" });
+      await update();
+    } finally {
+      router.push("/dashboard");
+    }
   };
 
   const tick = () => {
+    // eslint-disable-next-line react-hooks/purity -- imperative rAF timer loop, not a render-time call
     const p = Math.min(100, ((Date.now() - start.current) / 2000) * 100);
     setHold(p);
     if (p >= 100) {

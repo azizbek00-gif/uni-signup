@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession as useNextAuthSession, signOut } from "next-auth/react";
 import {
   ChevronRight,
   ChevronLeft,
@@ -26,28 +27,42 @@ type Step = (typeof STEPS)[number];
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { user, setUser, lang, setLang, ready } = useSession();
+  const { status } = useNextAuthSession();
+  const { user, lang, setLang, ready } = useSession();
   const t = T[lang];
 
   const [stepIdx, setStepIdx] = useState(0);
   const [anim, setAnim] = useState("in");
   const [query, setQuery] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const prefilled = useRef(false);
 
-  const [firstName, setFirstName] = useState(user.firstName);
-  const [lastName, setLastName] = useState(user.lastName);
-  const [age, setAge] = useState(user.age);
-  const [region, setRegion] = useState<Region | null>(
-    user.regionId ? REGION_BY_ID[user.regionId as keyof typeof REGION_BY_ID] : null
-  );
-  const [uni, setUni] = useState<University | null>(
-    user.uniName ? ALL_UNIS.find((u) => u.name === user.uniName) ?? null : null
-  );
-  const [dir, setDir] = useState<string | null>(user.dir);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [age, setAge] = useState("");
+  const [region, setRegion] = useState<Region | null>(null);
+  const [uni, setUni] = useState<University | null>(null);
+  const [dir, setDir] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status === "unauthenticated") router.replace("/");
+  }, [status, router]);
 
   useEffect(() => {
     if (!ready) return;
-    if (!user.email) router.replace("/");
-  }, [ready, user.email, router]);
+    if (user.onboarded) {
+      router.replace("/dashboard");
+      return;
+    }
+    if (prefilled.current) return;
+    prefilled.current = true;
+    setFirstName(user.firstName || "");
+    setLastName(user.lastName || "");
+    setAge(user.age ? String(user.age) : "");
+    setRegion(user.regionId ? REGION_BY_ID[user.regionId as keyof typeof REGION_BY_ID] ?? null : null);
+    setUni(user.uniName ? ALL_UNIS.find((u) => u.name === user.uniName) ?? null : null);
+    setDir(user.dir);
+  }, [ready, user, router]);
 
   const step: Step = STEPS[stepIdx];
   const filteredUnis = ALL_UNIS.filter((u) => u.name.toLowerCase().includes(query.toLowerCase()));
@@ -74,16 +89,27 @@ export default function OnboardingPage() {
     }, 220);
   };
 
-  const finish = () => {
-    setUser({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      age,
-      regionId: region?.id ?? null,
-      uniName: uni?.name ?? null,
-      dir,
-    });
-    router.push("/onboarding/success");
+  const finish = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/onboarding", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          age,
+          regionId: region?.id ?? null,
+          uniName: uni?.name ?? null,
+          dir,
+        }),
+      });
+      if (res.ok) router.push("/onboarding/success");
+      else setSubmitting(false);
+    } catch {
+      setSubmitting(false);
+    }
   };
 
   const onNext = () => {
@@ -93,7 +119,7 @@ export default function OnboardingPage() {
   };
 
   const onBack = () => {
-    if (stepIdx === 0) router.push("/");
+    if (stepIdx === 0) signOut({ callbackUrl: "/" });
     else go("prev");
   };
 
@@ -250,9 +276,9 @@ export default function OnboardingPage() {
           </button>
           <button
             onClick={onNext}
-            disabled={!canNext}
+            disabled={!canNext || submitting}
             className="uv-btn"
-            style={{ ...styles.primaryBtn, ...(!canNext ? styles.btnDisabled : {}) }}
+            style={{ ...styles.primaryBtn, ...(!canNext || submitting ? styles.btnDisabled : {}) }}
           >
             {step === "direction" ? t.finish : t.next}
             <ChevronRight size={18} />

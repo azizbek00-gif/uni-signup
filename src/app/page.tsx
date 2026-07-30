@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Mail, ChevronRight, GraduationCap } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { GraduationCap } from "lucide-react";
 import { styles } from "@/lib/styles";
 import { C } from "@/lib/tokens";
 import { T } from "@/lib/i18n";
@@ -12,9 +13,7 @@ import LangSwitch from "@/components/LangSwitch";
 
 export default function AuthPage() {
   const router = useRouter();
-  const { user, setUser, lang, setLang, ready } = useSession();
-  const [email, setEmail] = useState("");
-  const [showChooser, setShowChooser] = useState(false);
+  const { user, lang, setLang, ready } = useSession();
   const t = T[lang];
 
   useEffect(() => {
@@ -22,12 +21,6 @@ export default function AuthPage() {
     if (user.onboarded) router.replace("/dashboard");
     else if (user.email) router.replace("/onboarding");
   }, [ready, user.onboarded, user.email, router]);
-
-  const onContinue = () => {
-    if (!email.trim()) return;
-    setUser({ email: email.trim() });
-    router.push("/onboarding");
-  };
 
   return (
     <div
@@ -57,47 +50,14 @@ export default function AuthPage() {
           <h1 style={styles.authTitle}>{t.authTitle}</h1>
           <p style={styles.authSub}>{t.authSub}</p>
 
-          {!showChooser ? (
-            <button
-              className="uv-google"
-              style={styles.googleBtn}
-              onClick={() => setShowChooser(true)}
-            >
-              <GIcon />
-              <span>{t.google}</span>
-            </button>
-          ) : (
-            <div className="uv-chooser" style={styles.chooser}>
-              <div style={styles.chooserHead}>
-                <GIcon size={20} />
-                <span style={styles.chooserTitle}>{t.chooser}</span>
-              </div>
-              <div style={styles.inputWrap}>
-                <Mail size={18} color={C.muted} />
-                <input
-                  autoFocus
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t.emailPh}
-                  style={styles.emailInput}
-                  onKeyDown={(e) => e.key === "Enter" && onContinue()}
-                />
-              </div>
-              <button
-                className="uv-btn"
-                style={{ ...styles.primaryBtn, width: "100%", justifyContent: "center" }}
-                onClick={onContinue}
-                disabled={!email.trim()}
-              >
-                {t.next} <ChevronRight size={18} />
-              </button>
-            </div>
-          )}
-
-          <div style={styles.demoNote}>
-            <span style={styles.demoDot} /> {t.demoNote}
-          </div>
+          <button
+            className="uv-google"
+            style={styles.googleBtn}
+            onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
+          >
+            <GIcon />
+            <span>{t.google}</span>
+          </button>
         </div>
       </div>
     </div>

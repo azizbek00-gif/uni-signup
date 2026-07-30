@@ -3,6 +3,7 @@
 import { ReactNode, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { GraduationCap, LogOut } from "lucide-react";
 import { styles } from "@/lib/styles";
 import { T } from "@/lib/i18n";
@@ -19,7 +20,7 @@ const TABS = [
 export default function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, resetUser, lang, setLang, ready } = useSession();
+  const { user, lang, setLang, ready } = useSession();
   const t = T[lang];
 
   useEffect(() => {
@@ -28,8 +29,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   }, [ready, user.onboarded, router]);
 
   const onLogout = () => {
-    resetUser();
-    router.push("/");
+    signOut({ callbackUrl: "/" });
   };
 
   if (!user.onboarded) return null;

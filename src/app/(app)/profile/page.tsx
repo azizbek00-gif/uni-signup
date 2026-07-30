@@ -116,7 +116,7 @@ export default function ProfilePage() {
       <div className="uv-rise" style={{ ...styles.infoCard, marginTop: 16, animationDelay: "0.1s" }}>
         <div style={styles.infoHead}>{t.yourInfo}</div>
         <div style={styles.infoGrid}>
-          <InfoItem icon={<CalendarDays size={18} />} label={t.lAge} value={`${user.age} ${t.years}`} />
+          <InfoItem icon={<CalendarDays size={18} />} label={t.lAge} value={user.age ? `${user.age} ${t.years}` : "—"} />
           <InfoItem icon={<MapPin size={18} />} label={t.lRegion} value={region ? region[lang] : "—"} />
           <InfoItem icon={<Building2 size={18} />} label={t.lUni} value={user.uniName ?? "—"} wide />
           <InfoItem icon={<BookOpen size={18} />} label={t.lDir} value={user.dir ?? "—"} wide />

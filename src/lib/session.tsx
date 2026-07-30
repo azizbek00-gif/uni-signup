@@ -1,13 +1,14 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { useSession as useNextAuthSession } from "next-auth/react";
 import type { Lang } from "./i18n";
 
 export type UserData = {
   email: string;
   firstName: string;
   lastName: string;
-  age: string;
+  age: number | null;
   regionId: string | null;
   uniName: string | null;
   dir: string | null;
@@ -21,67 +22,80 @@ const EMPTY: UserData = {
   email: "",
   firstName: "",
   lastName: "",
-  age: "",
+  age: null,
   regionId: null,
   uniName: null,
   dir: null,
   onboarded: false,
-  streak: 3,
-  points: 240,
+  streak: 0,
+  points: 0,
   lastDay: 1,
 };
 
-const STORAGE_KEY = "unistep.session";
 const LANG_KEY = "unistep.lang";
 
 type Ctx = {
   user: UserData;
-  setUser: (u: Partial<UserData>) => void;
-  resetUser: () => void;
   lang: Lang;
   setLang: (l: Lang) => void;
   ready: boolean;
+  refresh: () => void;
 };
 
-const SessionContext = createContext<Ctx | null>(null);
+const LangSessionContext = createContext<Ctx | null>(null);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const [user, setUserState] = useState<UserData>(EMPTY);
+  const { data: authSession, status } = useNextAuthSession();
+  const [user, setUser] = useState<UserData>(EMPTY);
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [lang, setLangState] = useState<Lang>("uz");
-  const [ready, setReady] = useState(false);
+  const [refreshTick, setRefreshTick] = useState(0);
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setUserState({ ...EMPTY, ...JSON.parse(raw) });
       const savedLang = localStorage.getItem(LANG_KEY) as Lang | null;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from browser-only storage
       if (savedLang) setLangState(savedLang);
-    } catch {
-      // ignore corrupt storage
-    }
-    setReady(true);
-  }, []);
-
-  const setUser = (patch: Partial<UserData>) => {
-    setUserState((prev) => {
-      const next = { ...prev, ...patch };
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  };
-
-  const resetUser = () => {
-    setUserState(EMPTY);
-    try {
-      localStorage.removeItem(STORAGE_KEY);
     } catch {
       // ignore
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (status !== "authenticated") {
+      if (status === "unauthenticated") {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- reset derived from external auth status change
+        setUser(EMPTY);
+        setProfileLoaded(true);
+      }
+      return;
+    }
+    let cancelled = false;
+    fetch("/api/me")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        setUser({
+          email: data.email ?? authSession?.user?.email ?? "",
+          firstName: data.firstName ?? "",
+          lastName: data.lastName ?? "",
+          age: data.age,
+          regionId: data.regionId,
+          uniName: data.uniName,
+          dir: data.dir,
+          onboarded: !!data.onboarded,
+          streak: data.streak ?? 0,
+          points: data.points ?? 0,
+          lastDay: data.lastDay ?? 1,
+        });
+      })
+      .finally(() => {
+        if (!cancelled) setProfileLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [status, authSession?.user?.email, refreshTick]);
 
   const setLang = (l: Lang) => {
     setLangState(l);
@@ -92,16 +106,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const ready = status !== "loading" && profileLoaded;
+
   const value = useMemo(
-    () => ({ user, setUser, resetUser, lang, setLang, ready }),
+    () => ({ user, lang, setLang, ready, refresh: () => setRefreshTick((t) => t + 1) }),
     [user, lang, ready]
   );
 
-  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
+  return <LangSessionContext.Provider value={value}>{children}</LangSessionContext.Provider>;
 }
 
 export function useSession() {
-  const ctx = useContext(SessionContext);
+  const ctx = useContext(LangSessionContext);
   if (!ctx) throw new Error("useSession must be used within SessionProvider");
   return ctx;
 }
