@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #4f46e5;
+  --color-primary-dark: #4338ca;
+  --color-violet: #8b5cf6;
+  --color-emerald: #10b981;
+  --color-emerald-dark: #059669;
+  --color-amber: #f59e0b;
+  --color-ink: #1e1b4b;
+  --color-muted: #6b7280;
+  --color-line: #e9e7ff;
+}
+
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-violet: var(--color-violet);
+  --color-emerald: var(--color-emerald);
+  --color-emerald-dark: var(--color-emerald-dark);
+  --color-amber: var(--color-amber);
+  --color-ink: var(--color-ink);
+  --color-muted: var(--color-muted);
+  --color-line: var(--color-line);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-space);
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--color-ink);
+}
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 8px;
+}
+
+@keyframes uv-grad {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes uv-float1 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, 40px); }
+}
+@keyframes uv-float2 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-40px, -30px); }
+}
+@keyframes uv-confetti {
+  0% { transform: translateY(0) rotate(0); }
+  100% { transform: translateY(115vh) rotate(720deg); }
+}
+@keyframes uv-cardin {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes uv-pop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+@keyframes uv-fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes uv-rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes uv-menuin {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes uv-inR {
+  from { opacity: 0; transform: translateX(28px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes uv-inL {
+  from { opacity: 0; transform: translateX(-28px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes uv-outL {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(-28px); }
+}
+@keyframes uv-outR {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(28px); }
+}
+
+.uv-card { animation: uv-cardin 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.uv-pop { animation: uv-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4) 0.1s both; }
+.uv-fade { animation: uv-fadein 0.5s ease both; }
+.uv-rise { animation: uv-rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.uv-menu { animation: uv-menuin 0.18s ease both; }
+.uv-chooser { animation: uv-rise 0.35s ease both; }
+
+.uv-step { will-change: transform, opacity; }
+.uv-in-right { animation: uv-inR 0.3s ease both; }
+.uv-in-left { animation: uv-inL 0.3s ease both; }
+.uv-out-left { animation: uv-outL 0.22s ease both; }
+.uv-out-right { animation: uv-outR 0.22s ease both; }
+
+.uv-btn { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.uv-btn:hover:not(:disabled) { transform: translateY(-2px); }
+.uv-btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+.uv-btn-ghost, .uv-navlink, .uv-google, .uv-chip, .uv-row { transition: all 0.18s ease; }
+.uv-btn-ghost:hover { border-color: #4f46e555; color: var(--color-primary); }
+.uv-google:hover { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); transform: translateY(-1px); }
+.uv-chip:hover { border-color: #4f46e566; transform: translateY(-1px); }
+.uv-row:hover { border-color: #4f46e555; transform: translateX(2px); }
+.uv-navlink:hover { color: var(--color-primary); background: #4f46e50d; }
+.uv-hold:active { transform: scale(0.96); }
+
+@media (max-width: 640px) {
+  .uv-hide-sm { display: none; }
+  .uv-navlinks { order: 3; width: 100%; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
