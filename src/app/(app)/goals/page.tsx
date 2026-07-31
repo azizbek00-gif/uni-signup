@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Heart, MessageCircle, Send, Target } from "lucide-react";
 import { styles } from "@/lib/styles";
 import { C } from "@/lib/tokens";
@@ -8,86 +8,67 @@ import { T } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
 
 type Comment = { id: string; author: string; text: string };
-type Post = { id: string; author: string; text: string; likes: number; liked: boolean; comments: Comment[] };
+type Post = { id: string; author: string; text: string; likeCount: number; liked: boolean; comments: Comment[] };
 
-const SEED: Post[] = [
-  {
-    id: "seed-1",
-    author: "Madina",
-    text: "DTMdan 189+ ball olib, TATUga grantga o'taman!",
-    likes: 12,
-    liked: false,
-    comments: [{ id: "c1", author: "Sardor", text: "Omad! Sen uddalaysan 💪" }],
-  },
-  {
-    id: "seed-2",
-    author: "Jasur",
-    text: "Har kuni 2 soat matematika, 1 soat ingliz tili — 31 kunlik rejamni tugataman.",
-    likes: 8,
-    liked: false,
-    comments: [],
-  },
-];
-
-const STORAGE_KEY = "unistep.posts";
+const POLL_MS = 6000;
 
 export default function GoalsPage() {
-  const { user, lang } = useSession();
+  const { lang } = useSession();
   const t = T[lang];
-  const [posts, setPosts] = useState<Post[]>(SEED);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [draft, setDraft] = useState("");
   const [commentDraft, setCommentDraft] = useState<Record<string, string>>({});
 
-  useEffect(() => {
+  const load = useCallback(async () => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from browser-only storage
-      if (raw) setPosts(JSON.parse(raw));
+      const res = await fetch("/api/posts");
+      if (!res.ok) return;
+      const data = await res.json();
+      setPosts(data.posts);
     } catch {
-      // ignore
+      // ignore transient poll failures
+    } finally {
+      setLoaded(true);
     }
   }, []);
 
-  const persist = (next: Post[]) => {
-    setPosts(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      // ignore
-    }
-  };
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- kicks off initial fetch + poll interval
+    load();
+    const id = setInterval(load, POLL_MS);
+    return () => clearInterval(id);
+  }, [load]);
 
-  const addPost = () => {
-    if (!draft.trim()) return;
-    const post: Post = {
-      id: `p-${Date.now()}`,
-      author: user.firstName || "Siz",
-      text: draft.trim(),
-      likes: 0,
-      liked: false,
-      comments: [],
-    };
-    persist([post, ...posts]);
+  const addPost = async () => {
+    const text = draft.trim();
+    if (!text) return;
     setDraft("");
+    await fetch("/api/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    load();
   };
 
-  const toggleLike = (id: string) => {
-    persist(
-      posts.map((p) => (p.id === id ? { ...p, liked: !p.liked, likes: p.likes + (p.liked ? -1 : 1) } : p))
+  const toggleLike = async (id: string) => {
+    setPosts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, liked: !p.liked, likeCount: p.likeCount + (p.liked ? -1 : 1) } : p))
     );
+    await fetch(`/api/posts/${id}/like`, { method: "POST" });
   };
 
-  const addComment = (id: string) => {
+  const addComment = async (id: string) => {
     const text = (commentDraft[id] || "").trim();
     if (!text) return;
-    persist(
-      posts.map((p) =>
-        p.id === id
-          ? { ...p, comments: [...p.comments, { id: `c-${Date.now()}`, author: user.firstName || "Siz", text }] }
-          : p
-      )
-    );
     setCommentDraft((d) => ({ ...d, [id]: "" }));
+    await fetch(`/api/posts/${id}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    load();
   };
 
   return (
@@ -127,6 +108,10 @@ export default function GoalsPage() {
           </button>
         </div>
       </div>
+
+      {loaded && posts.length === 0 && (
+        <div style={{ ...styles.infoCard, textAlign: "center", color: C.muted }}>{t.noRes}</div>
+      )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         {posts.map((post) => (
@@ -169,7 +154,7 @@ export default function GoalsPage() {
                   color: post.liked ? "#EC4899" : C.muted,
                 }}
               >
-                <Heart size={16} fill={post.liked ? "#EC4899" : "none"} /> {post.likes} {t.like}
+                <Heart size={16} fill={post.liked ? "#EC4899" : "none"} /> {post.likeCount} {t.like}
               </button>
               <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5, fontWeight: 600, color: C.muted }}>
                 <MessageCircle size={16} /> {post.comments.length} {t.comment}

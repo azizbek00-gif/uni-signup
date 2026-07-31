@@ -16,8 +16,9 @@ Navbar: **Bosh sahifa · Universitetlar · Maqsadlar · Profil**
 - [x] Gemini API — AI yordamchi (mavzu-doirali chat) va TTS audio infratuzilmasi
 - [x] 31 kunlik darslik: DTM 2026 formati (90 savol, 189 ball) asosida, yo'nalishga mos
       fanlar bo'yicha AI tomonidan generatsiya qilingan dars matni + audio + 5 savolli test
-- [ ] Universitetlar bo'limida real qabul ballari (hozir mock)
-- [ ] Maqsadlar lentasi — hozircha localStorage, realtime emas
+- [x] Universitetlar bo'limida real DTM milliy minimal ballari + OTM toifasiga ko'ra taxminiy ball,
+      rasmiy qabul jarayoni (my.uzbmb.uz) ma'lumoti bilan
+- [x] Maqsadlar lentasi — Postgres'da saqlanadi, 6 soniyada avtomatik yangilanadi (near-realtime)
 - [ ] Dark/Light rejim
 
 ## Ishga tushirish
