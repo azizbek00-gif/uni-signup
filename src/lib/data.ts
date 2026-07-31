@@ -118,3 +118,42 @@ export const REGION_BY_ID: Record<RegionId, Region> = Object.fromEntries(
 
 export const ALL_UNIS: University[] = (Object.entries(UNIS) as [RegionId, { name: string; dirs: string[] }[]][])
   .flatMap(([rid, list]) => list.map((u) => ({ ...u, regionId: rid })));
+
+// Umumiy tanilganlik darajasiga ko'ra taxminiy toifalash (rasmiy reyting emas) —
+// UI'da ball taxminlarini asossiz tekis tasodifdan ko'ra real ko'rinishga yaqinlashtirish uchun.
+export type UniTier = "elite" | "high" | "mid" | "regional";
+
+const ELITE = new Set([
+  "O'zbekiston Milliy universiteti (Mirzo Ulug'bek)",
+  "Toshkent axborot texnologiyalari universiteti (TATU)",
+  "Inha universiteti (Toshkent)",
+  "Westminster xalqaro universiteti (WIUT)",
+  "Toshkent davlat yuridik universiteti",
+  "Toshkent tibbiyot akademiyasi",
+  "Turin politexnika universiteti",
+]);
+
+const HIGH = new Set([
+  "Toshkent davlat texnika universiteti",
+  "Toshkent davlat iqtisodiyot universiteti",
+  "Toshkent davlat sharqshunoslik universiteti",
+  "Nizomiy nomidagi TDPU",
+  "Samarqand davlat universiteti",
+  "Samarqand davlat tibbiyot universiteti",
+  "Toshkent kimyo-texnologiya instituti",
+]);
+
+const REGIONAL = new Set([
+  "Chirchiq davlat pedagogika universiteti",
+  "Jizzax davlat pedagogika universiteti",
+  "Nukus davlat pedagogika instituti",
+  "Guliston davlat universiteti",
+  "Toshkent davlat agrar universiteti",
+]);
+
+export function tierOf(name: string): UniTier {
+  if (ELITE.has(name)) return "elite";
+  if (HIGH.has(name)) return "high";
+  if (REGIONAL.has(name)) return "regional";
+  return "mid";
+}

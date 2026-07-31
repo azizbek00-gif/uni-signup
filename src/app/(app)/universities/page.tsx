@@ -1,21 +1,37 @@
 "use client";
 
-import { GraduationCap, CalendarDays, Award, FileText, Building2, MapPin } from "lucide-react";
+import { GraduationCap, CalendarDays, Award, FileText, Building2, MapPin, Info } from "lucide-react";
 import { styles } from "@/lib/styles";
 import { C } from "@/lib/tokens";
 import { T } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
-import { ALL_UNIS, REGION_BY_ID } from "@/lib/data";
+import { ALL_UNIS, REGION_BY_ID, tierOf, type UniTier } from "@/lib/data";
 import AiAssistant from "@/components/AiAssistant";
 
-// Deterministic mock scores until real DTM admission data is wired in (see task: universities research).
+// 2024/2025 o'quv yili uchun DTM milliy minimal ko'rsatkichlari (tasdiqlangan):
+// grant — 68.0 ball (189 balldan 36%), kontrakt — 56.7 ball (30%). Manba: regimtihon.uz, ustabor.uz.
+// Har bir OTM/yo'nalish uchun ANIQ ball rasmiy DTM/UZBMB va tegishli OTM sayti orqali e'lon qilinadi —
+// quyidagi qiymatlar shu milliy minimumdan boshlab, OTMning umumiy tanilganlik darajasiga (toifasiga)
+// ko'ra hisoblangan TAXMIN, rasmiy natija emas.
+const GRANT_FLOOR = 68.0;
+const CONTRACT_FLOOR = 56.7;
+
+const TIER_RANGE: Record<UniTier, [number, number]> = {
+  elite: [150, 186],
+  high: [110, 155],
+  mid: [80, 118],
+  regional: [68, 92],
+};
+
 function mockStats(name: string) {
+  const tier = tierOf(name);
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 100000;
-  const grant = 165 + (h % 45);
-  const contract = grant - 20 - (h % 15);
+  const [min, max] = TIER_RANGE[tier];
+  const grant = Math.max(GRANT_FLOOR, min + (h % (max - min)));
+  const contract = Math.max(CONTRACT_FLOOR, grant - 15 - (h % 15));
   const students = 800 + (h % 6200);
-  return { grant, contract, students };
+  return { grant: Math.round(grant), contract: Math.round(contract), students, tier };
 }
 
 export default function UniversitiesPage() {
@@ -43,10 +59,23 @@ export default function UniversitiesPage() {
             <MapPin size={13} /> {REGION_BY_ID[selectedUni.regionId][lang]} · {user.dir}
           </div>
           <div style={styles.infoGrid}>
-            <InfoBlock icon={<CalendarDays size={18} />} label={t.examDate} value="2027-yil iyun-avgust" />
+            <InfoBlock icon={<CalendarDays size={18} />} label={t.examDate} value={t.examDateValue} wide />
             <InfoBlock icon={<Award size={18} />} label={t.grantScore} value={`${selectedStats.grant} ball`} />
             <InfoBlock icon={<Award size={18} />} label={t.contractScore} value={`${selectedStats.contract} ball`} />
-            <InfoBlock icon={<FileText size={18} />} label={t.howToApply} value="my.gov.uz orqali onlayn ariza" wide />
+            <InfoBlock icon={<FileText size={18} />} label={t.howToApply} value={t.howToApplyValue} wide />
+          </div>
+          <div
+            style={{
+              marginTop: 14,
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 8,
+              fontSize: 12,
+              color: C.muted,
+            }}
+          >
+            <Info size={14} style={{ flexShrink: 0, marginTop: 1 }} />
+            {t.scoreDisclaimer}
           </div>
         </div>
       )}
@@ -97,6 +126,19 @@ export default function UniversitiesPage() {
               </div>
             </div>
           ))}
+        </div>
+        <div
+          style={{
+            marginTop: 14,
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 8,
+            fontSize: 12,
+            color: C.muted,
+          }}
+        >
+          <Info size={14} style={{ flexShrink: 0, marginTop: 1 }} />
+          {t.scoreDisclaimer}
         </div>
       </div>
 
