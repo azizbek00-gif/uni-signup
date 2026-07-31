@@ -34,6 +34,7 @@ model User {
   posts          Post[]
   comments       Comment[]
   likes          Like[]
+  dayContents    DayContent[]
 }
 
 model Account {
@@ -100,4 +101,21 @@ model Like {
   createdAt DateTime @default(now())
 
   @@unique([postId, userId])
+}
+
+model DayContent {
+  id          String    @id @default(cuid())
+  userId      String
+  day         Int
+  subject     String
+  topic       String
+  lessonText  String    @db.Text
+  quiz        Json
+  score       Int?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, day])
 }

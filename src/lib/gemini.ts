@@ -50,16 +50,23 @@ export async function askAssistant({
 }
 
 export async function generateLessonText({
+  subject,
   topic,
   lang,
 }: {
+  subject: string;
   topic: string;
   lang: string;
 }) {
   const ai = getClient();
-  const prompt = `DTM imtihoniga tayyorgarlik uchun "${topic}" mavzusida qisqa (250-350 so'zli),
-tushunarli dars matnini ${lang} tilida yoz. Matn: mavzuni tushuntirish + 2-3 ta misol.
-Faqat oddiy matn qaytar, markdown belgilarisiz.`;
+  const prompt = `Sen DTM (O'zbekiston Davlat Test Markazi) imtihoniga tayyorgarlik dasturi uchun dars matni yozuvchi
+muallifsan. Fan: "${subject}". Mavzu: "${topic}".
+
+Shu mavzu bo'yicha 300-400 so'zli, aniq va tushunarli dars matni yoz, ${lang} tilida. Talablar:
+- Avval mavzuni sodda tilda tushuntir.
+- Keyin 2-3 ta aniq misol yoki masala yechimi bilan ko'rsat.
+- Oxirida 2-3 gapli qisqa xulosa.
+- Faqat oddiy matn qaytar (markdown belgilar, sarlavha belgilari ishlatma).`;
 
   const response = await ai.models.generateContent({
     model: TEXT_MODEL,
@@ -67,6 +74,56 @@ Faqat oddiy matn qaytar, markdown belgilarisiz.`;
   });
 
   return response.text ?? "";
+}
+
+export type QuizQuestion = {
+  question: string;
+  options: [string, string, string, string];
+  correctIndex: number;
+};
+
+export async function generateQuiz({
+  subject,
+  topic,
+  lang,
+}: {
+  subject: string;
+  topic: string;
+  lang: string;
+}): Promise<QuizQuestion[]> {
+  const ai = getClient();
+  const prompt = `"${subject}" fanidan "${topic}" mavzusida DTM uslubida 5 ta test savoli tuz, ${lang} tilida.
+Har bir savolda aniq 4 ta variant bo'lsin, ulardan faqat bittasi to'g'ri.
+Matematik ifodalarni oddiy matn ko'rinishida yoz (LaTeX yoki $ belgilarisiz, masalan "x kvadrat - 5x + 6 = 0").
+Faqat quyidagi JSON formatida javob ber, boshqa hech narsa yozma:
+[{"question": "...", "options": ["...", "...", "...", "..."], "correctIndex": 0}, ...]`;
+
+  const response = await ai.models.generateContent({
+    model: TEXT_MODEL,
+    contents: prompt,
+    config: { responseMimeType: "application/json" },
+  });
+
+  const raw = response.text ?? "[]";
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    const match = raw.match(/\[[\s\S]*\]/);
+    parsed = match ? JSON.parse(match[0]) : [];
+  }
+
+  if (!Array.isArray(parsed)) return [];
+  return parsed
+    .filter(
+      (q): q is QuizQuestion =>
+        q &&
+        typeof q.question === "string" &&
+        Array.isArray(q.options) &&
+        q.options.length === 4 &&
+        typeof q.correctIndex === "number"
+    )
+    .slice(0, 5);
 }
 
 export async function generateSpeech(text: string): Promise<Buffer> {

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Sparkles, Flame, Trophy, Target, Lock, Check, Play, Info } from "lucide-react";
 import { styles } from "@/lib/styles";
 import { C } from "@/lib/tokens";
@@ -51,13 +52,13 @@ export default function DashboardPage() {
         <p style={{ color: C.muted, fontSize: 14, margin: "0 0 18px" }}>
           {user.dir ?? t.roadmapSub}
         </p>
-        <a
-          href="#roadmap"
+        <Link
+          href={`/dashboard/day/${lastDay}`}
           className="uv-btn"
           style={{ ...styles.primaryBtn, justifyContent: "center", display: "inline-flex", textDecoration: "none" }}
         >
           <Play size={18} /> {t.startLesson}
-        </a>
+        </Link>
       </div>
 
       <div id="roadmap" className="uv-rise" style={{ ...styles.infoCard, marginTop: 20, animationDelay: "0.15s" }}>
@@ -73,26 +74,29 @@ export default function DashboardPage() {
           {Array.from({ length: TOTAL_DAYS }, (_, i) => i + 1).map((day) => {
             const unlocked = day <= lastDay;
             const done = day < lastDay;
-            return (
-              <div
-                key={day}
-                title={unlocked ? `${t.dayLabel} ${day}` : t.locked}
-                style={{
-                  aspectRatio: "1",
-                  borderRadius: 12,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 2,
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  background: done ? `${C.emerald}14` : unlocked ? `${C.primary}12` : "#F3F3F8",
-                  border: `1.5px solid ${done ? C.emerald : unlocked ? C.primary : C.line}`,
-                  color: done ? C.emeraldDark : unlocked ? C.primary : C.muted,
-                }}
-              >
-                {done ? <Check size={14} /> : unlocked ? day : <Lock size={12} />}
+            const cellStyle = {
+              aspectRatio: "1",
+              borderRadius: 12,
+              display: "flex",
+              flexDirection: "column" as const,
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 2,
+              fontSize: 12.5,
+              fontWeight: 700,
+              textDecoration: "none",
+              background: done ? `${C.emerald}14` : unlocked ? `${C.primary}12` : "#F3F3F8",
+              border: `1.5px solid ${done ? C.emerald : unlocked ? C.primary : C.line}`,
+              color: done ? C.emeraldDark : unlocked ? C.primary : C.muted,
+            };
+            const content = done ? <Check size={14} /> : unlocked ? day : <Lock size={12} />;
+            return unlocked ? (
+              <Link key={day} href={`/dashboard/day/${day}`} title={`${t.dayLabel} ${day}`} style={cellStyle}>
+                {content}
+              </Link>
+            ) : (
+              <div key={day} title={t.locked} style={cellStyle}>
+                {content}
               </div>
             );
           })}

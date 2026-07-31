@@ -14,7 +14,8 @@ Navbar: **Bosh sahifa · Universitetlar · Maqsadlar · Profil**
 - [x] NextAuth (Google) — real autentifikatsiya
 - [x] Neon Postgres + Prisma — foydalanuvchi ma'lumotlarini bazaga saqlash
 - [x] Gemini API — AI yordamchi (mavzu-doirali chat) va TTS audio infratuzilmasi
-- [ ] 31 kunlik darslik (DTM formatiga mos, real kontent)
+- [x] 31 kunlik darslik: DTM 2026 formati (90 savol, 189 ball) asosida, yo'nalishga mos
+      fanlar bo'yicha AI tomonidan generatsiya qilingan dars matni + audio + 5 savolli test
 - [ ] Universitetlar bo'limida real qabul ballari (hozir mock)
 - [ ] Maqsadlar lentasi — hozircha localStorage, realtime emas
 - [ ] Dark/Light rejim
