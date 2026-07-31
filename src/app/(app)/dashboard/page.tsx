@@ -5,6 +5,7 @@ import { styles } from "@/lib/styles";
 import { C } from "@/lib/tokens";
 import { T } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
+import AiAssistant from "@/components/AiAssistant";
 
 const TOTAL_DAYS = 31;
 
@@ -116,6 +117,10 @@ export default function DashboardPage() {
       >
         <Info size={16} style={{ flexShrink: 0, marginTop: 1 }} />
         {t.disclaimer}
+      </div>
+
+      <div style={{ marginTop: 20 }}>
+        <AiAssistant topic={`DTM tayyorgarlik, foydalanuvchi yo'nalishi: ${user.dir ?? "umumiy"}, ${lastDay}-kun dasturi`} />
       </div>
     </div>
   );

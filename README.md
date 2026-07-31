@@ -11,15 +11,12 @@ Navbar: **Bosh sahifa · Universitetlar · Maqsadlar · Profil**
 
 ## Holat
 
-Hozirgi bosqich — **mock/demo versiya**: barcha ma'lumot brauzer localStorage'ida saqlanadi, real Google login yo'q.
-Keyingi bosqichlarda quyidagilar ulanadi:
-
-- [ ] NextAuth (Google) — real autentifikatsiya
-- [ ] Neon Postgres + Prisma — foydalanuvchi ma'lumotlarini bazaga saqlash
-- [ ] Gemini API — AI yordamchi, kontent generatsiyasi, TTS audio
-- [ ] 31 kunlik darslik (DTM formatiga mos)
-- [ ] Universitetlar bo'limida real qabul ballari
-- [ ] Maqsadlar lentasi — realtime
+- [x] NextAuth (Google) — real autentifikatsiya
+- [x] Neon Postgres + Prisma — foydalanuvchi ma'lumotlarini bazaga saqlash
+- [x] Gemini API — AI yordamchi (mavzu-doirali chat) va TTS audio infratuzilmasi
+- [ ] 31 kunlik darslik (DTM formatiga mos, real kontent)
+- [ ] Universitetlar bo'limida real qabul ballari (hozir mock)
+- [ ] Maqsadlar lentasi — hozircha localStorage, realtime emas
 - [ ] Dark/Light rejim
 
 ## Ishga tushirish

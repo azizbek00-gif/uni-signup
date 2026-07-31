@@ -6,6 +6,7 @@ import { C } from "@/lib/tokens";
 import { T } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
 import { ALL_UNIS, REGION_BY_ID } from "@/lib/data";
+import AiAssistant from "@/components/AiAssistant";
 
 // Deterministic mock scores until real DTM admission data is wired in (see task: universities research).
 function mockStats(name: string) {
@@ -97,6 +98,10 @@ export default function UniversitiesPage() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div style={{ marginTop: 20 }}>
+        <AiAssistant topic={`Universitetlar va qabul jarayoni, foydalanuvchi tanlagan: ${user.uniName ?? "hali tanlanmagan"}`} />
       </div>
     </div>
   );
