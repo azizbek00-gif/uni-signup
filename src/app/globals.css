@@ -10,6 +10,25 @@
   --color-ink: #1e1b4b;
   --color-muted: #6b7280;
   --color-line: #e9e7ff;
+
+  /* app-shell surfaces (dashboard/universities/goals/profile) — onboarding keeps its fixed light card look */
+  --surface: rgba(255, 255, 255, 0.97);
+  --surface-nav: rgba(255, 255, 255, 0.95);
+  --surface-2: #f7f7fd;
+  --surface-input: #f9fafb;
+  --surface-border: var(--color-line);
+  --text-strong: var(--color-ink);
+  --text-muted: var(--color-muted);
+}
+
+:root[data-theme="dark"] {
+  --surface: rgba(30, 27, 75, 0.82);
+  --surface-nav: rgba(24, 21, 61, 0.9);
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --surface-input: rgba(255, 255, 255, 0.07);
+  --surface-border: rgba(255, 255, 255, 0.14);
+  --text-strong: #f3f2ff;
+  --text-muted: #b6b3d9;
 }
 
 @theme inline {

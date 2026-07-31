@@ -19,7 +19,11 @@ Navbar: **Bosh sahifa · Universitetlar · Maqsadlar · Profil**
 - [x] Universitetlar bo'limida real DTM milliy minimal ballari + OTM toifasiga ko'ra taxminiy ball,
       rasmiy qabul jarayoni (my.uzbmb.uz) ma'lumoti bilan
 - [x] Maqsadlar lentasi — Postgres'da saqlanadi, 6 soniyada avtomatik yangilanadi (near-realtime)
-- [ ] Dark/Light rejim
+- [x] Profil: Google avatar, maqsad matni (saqlanadi), daraja/streak/ball, yutuq nishonlari,
+      umumiy va OTM bo'yicha reyting (leaderboard)
+- [x] Kunlik eslatma banneri (dashboard) — hali dars boshlanmagan bo'lsa ko'rinadi
+- [x] Dark/Light rejim — ilova qismida (dashboard/universitetlar/maqsadlar/profil) almashtiriladi;
+      ro'yxatdan o'tish oqimi dizayni har doim o'zgarmas saqlanadi
 
 ## Ishga tushirish
 

@@ -118,7 +118,7 @@ export default function DayPage({ params }: { params: Promise<{ day: string }> }
   if (loading) {
     return (
       <div style={styles.homeInner}>
-        <div style={{ ...styles.infoCard, textAlign: "center", color: C.muted }}>
+        <div style={{ ...styles.infoCard, textAlign: "center", color: "var(--text-muted)" }}>
           <Loader2 className="uv-pop" size={22} /> {t.loadingLesson}
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function DayPage({ params }: { params: Promise<{ day: string }> }
   if (error || !data) {
     return (
       <div style={styles.homeInner}>
-        <div style={{ ...styles.infoCard, textAlign: "center", color: C.muted }}>{t.dayLocked}</div>
+        <div style={{ ...styles.infoCard, textAlign: "center", color: "var(--text-muted)" }}>{t.dayLocked}</div>
       </div>
     );
   }
@@ -160,10 +160,10 @@ export default function DayPage({ params }: { params: Promise<{ day: string }> }
         >
           {t.dayLabel} {data.day} · {data.subject}
         </div>
-        <div style={{ fontFamily: "var(--font-space)", fontSize: 22, fontWeight: 700, marginBottom: 14 }}>
+        <div style={{ fontFamily: "var(--font-space)", fontSize: 22, fontWeight: 700, marginBottom: 14, color: "var(--text-strong)" }}>
           {data.topic}
         </div>
-        <p style={{ fontSize: 15, lineHeight: 1.7, color: C.ink, whiteSpace: "pre-wrap" }}>{data.lessonText}</p>
+        <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--text-strong)", whiteSpace: "pre-wrap" }}>{data.lessonText}</p>
 
         <button
           onClick={playAudio}
@@ -181,7 +181,7 @@ export default function DayPage({ params }: { params: Promise<{ day: string }> }
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           {data.quiz.map((q, qi) => (
             <div key={qi}>
-              <div style={{ fontSize: 14.5, fontWeight: 600, color: C.ink, marginBottom: 10 }}>
+              <div style={{ fontSize: 14.5, fontWeight: 600, color: "var(--text-strong)", marginBottom: 10 }}>
                 {qi + 1}. {q.question}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -239,11 +239,11 @@ export default function DayPage({ params }: { params: Promise<{ day: string }> }
               <XCircle size={24} color={C.amber} />
             )}
             <div>
-              <div style={{ fontWeight: 700, color: C.ink }}>
+              <div style={{ fontWeight: 700, color: "var(--text-strong)" }}>
                 {t.quizResult}: {result.scorePct}% ({result.correct}/{result.total} {t.correctOf})
               </div>
               {result.earnedPoints > 0 && (
-                <div style={{ fontSize: 13, color: C.muted }}>
+                <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
                   +{result.earnedPoints} {t.pointsEarned}
                   {result.unlockedNextDay ? ` · ${t.nextDayUnlocked}` : ""}
                 </div>

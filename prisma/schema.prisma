@@ -21,6 +21,7 @@ model User {
   universityName String?
   direction      String?
   onboarded      Boolean   @default(false)
+  goal           String?
 
   streak         Int       @default(0)
   points         Int       @default(0)

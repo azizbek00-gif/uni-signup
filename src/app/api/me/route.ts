@@ -17,6 +17,7 @@ export async function GET() {
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
+    image: user.image,
     age: user.age,
     regionId: user.regionId,
     uniName: user.universityName,
@@ -25,5 +26,7 @@ export async function GET() {
     streak: user.streak,
     points: user.points,
     lastDay: user.lastDay,
+    goal: user.goal,
+    lastActiveAt: user.lastActiveAt,
   });
 }

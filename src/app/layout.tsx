@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { SessionProvider as NextAuthSessionProvider } from "next-auth/react";
 import { SessionProvider } from "@/lib/session";
+import { ThemeProvider } from "@/lib/theme";
 import Background from "@/components/Background";
 
 const inter = Inter({
@@ -40,8 +41,10 @@ export default function RootLayout({
       >
         <NextAuthSessionProvider>
           <SessionProvider>
-            <Background />
-            {children}
+            <ThemeProvider>
+              <Background />
+              {children}
+            </ThemeProvider>
           </SessionProvider>
         </NextAuthSessionProvider>
       </body>

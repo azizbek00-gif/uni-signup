@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, Flame, Trophy, Target, Lock, Check, Play, Info } from "lucide-react";
+import { Sparkles, Flame, Trophy, Target, Lock, Check, Play, Info, Bell } from "lucide-react";
 import { styles } from "@/lib/styles";
 import { C } from "@/lib/tokens";
 import { T } from "@/lib/i18n";
@@ -16,6 +16,9 @@ export default function DashboardPage() {
   const name = user.firstName || "Talaba";
   const lastDay = user.lastDay || 1;
   const progressPct = Math.round((lastDay / TOTAL_DAYS) * 100);
+  const activeToday = user.lastActiveAt
+    ? new Date(user.lastActiveAt).toDateString() === new Date().toDateString()
+    : false;
 
   return (
     <div style={styles.homeInner}>
@@ -26,6 +29,40 @@ export default function DashboardPage() {
         <h1 style={styles.heroTitle}>{t.homeHero}</h1>
         <p style={styles.heroSub}>{t.homeHeroSub}</p>
       </div>
+
+      {!activeToday && (
+        <Link
+          href={`/dashboard/day/${lastDay}`}
+          className="uv-rise"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: "14px 18px",
+            borderRadius: 16,
+            marginBottom: 8,
+            background: `linear-gradient(135deg,${C.amber}22,${C.amber}0d)`,
+            border: `1.5px solid ${C.amber}55`,
+            textDecoration: "none",
+          }}
+        >
+          <span
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 11,
+              display: "grid",
+              placeItems: "center",
+              background: C.amber,
+              flexShrink: 0,
+            }}
+          >
+            <Bell size={17} color="#fff" />
+          </span>
+          <span style={{ flex: 1, fontSize: 13.5, fontWeight: 600, color: "var(--text-strong)" }}>{t.reminderText}</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#B45309", whiteSpace: "nowrap" }}>{t.reminderCta} →</span>
+        </Link>
+      )}
 
       <div
         className="uv-rise"
@@ -46,10 +83,10 @@ export default function DashboardPage() {
         className="uv-rise"
         style={{ ...styles.infoCard, marginTop: 20, animationDelay: "0.1s", textAlign: "center" }}
       >
-        <div style={{ fontFamily: "var(--font-space)", fontSize: 19, fontWeight: 700, marginBottom: 8 }}>
+        <div style={{ fontFamily: "var(--font-space)", fontSize: 19, fontWeight: 700, marginBottom: 8, color: "var(--text-strong)" }}>
           {t.dayLabel} {lastDay}
         </div>
-        <p style={{ color: C.muted, fontSize: 14, margin: "0 0 18px" }}>
+        <p style={{ color: "var(--text-muted)", fontSize: 14, margin: "0 0 18px" }}>
           {user.dir ?? t.roadmapSub}
         </p>
         <Link
@@ -63,7 +100,7 @@ export default function DashboardPage() {
 
       <div id="roadmap" className="uv-rise" style={{ ...styles.infoCard, marginTop: 20, animationDelay: "0.15s" }}>
         <div style={styles.infoHead}>{t.roadmapTitle}</div>
-        <p style={{ color: C.muted, fontSize: 13.5, margin: "-12px 0 18px" }}>{t.roadmapSub}</p>
+        <p style={{ color: "var(--text-muted)", fontSize: 13.5, margin: "-12px 0 18px" }}>{t.roadmapSub}</p>
         <div
           style={{
             display: "grid",
@@ -85,9 +122,9 @@ export default function DashboardPage() {
               fontSize: 12.5,
               fontWeight: 700,
               textDecoration: "none",
-              background: done ? `${C.emerald}14` : unlocked ? `${C.primary}12` : "#F3F3F8",
+              background: done ? `${C.emerald}14` : unlocked ? `${C.primary}12` : "var(--surface-2)",
               border: `1.5px solid ${done ? C.emerald : unlocked ? C.primary : C.line}`,
-              color: done ? C.emeraldDark : unlocked ? C.primary : C.muted,
+              color: done ? C.emeraldDark : unlocked ? C.primary : "var(--text-muted)",
             };
             const content = done ? <Check size={14} /> : unlocked ? day : <Lock size={12} />;
             return unlocked ? (
@@ -112,10 +149,10 @@ export default function DashboardPage() {
           gap: 10,
           padding: "14px 16px",
           borderRadius: 15,
-          background: "rgba(255,255,255,0.85)",
-          border: `1px solid ${C.line}`,
+          background: "var(--surface)",
+          border: `1px solid var(--surface-border)`,
           fontSize: 12.5,
-          color: C.muted,
+          color: "var(--text-muted)",
           animationDelay: "0.2s",
         }}
       >
@@ -134,14 +171,14 @@ function StatCard({ icon, color, label, value }: { icon: React.ReactNode; color:
   return (
     <div
       style={{
-        background: "rgba(255,255,255,0.97)",
+        background: "var(--surface)",
         borderRadius: 18,
         padding: "16px 16px",
         display: "flex",
         alignItems: "center",
         gap: 12,
         boxShadow: "0 16px 40px rgba(23,20,60,0.25)",
-        border: "1px solid rgba(255,255,255,0.6)",
+        border: "1px solid var(--surface-border)",
       }}
     >
       <span
@@ -159,8 +196,8 @@ function StatCard({ icon, color, label, value }: { icon: React.ReactNode; color:
         {icon}
       </span>
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: 12, color: C.muted, fontWeight: 600 }}>{label}</div>
-        <div style={{ fontFamily: "var(--font-space)", fontSize: 19, fontWeight: 700, color: C.ink }}>{value}</div>
+        <div style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 600 }}>{label}</div>
+        <div style={{ fontFamily: "var(--font-space)", fontSize: 19, fontWeight: 700, color: "var(--text-strong)" }}>{value}</div>
       </div>
     </div>
   );

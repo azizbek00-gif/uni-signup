@@ -52,10 +52,10 @@ export default function UniversitiesPage() {
           <div style={styles.infoHead}>
             <GraduationCap size={18} color={C.primary} /> {t.uniInfoTitle}
           </div>
-          <div style={{ fontFamily: "var(--font-space)", fontSize: 18, fontWeight: 700, marginBottom: 4 }}>
+          <div style={{ fontFamily: "var(--font-space)", fontSize: 18, fontWeight: 700, marginBottom: 4, color: "var(--text-strong)" }}>
             {selectedUni.name}
           </div>
-          <div style={{ color: C.muted, fontSize: 14, marginBottom: 18, display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ color: "var(--text-muted)", fontSize: 14, marginBottom: 18, display: "flex", alignItems: "center", gap: 6 }}>
             <MapPin size={13} /> {REGION_BY_ID[selectedUni.regionId][lang]} · {user.dir}
           </div>
           <div style={styles.infoGrid}>
@@ -71,7 +71,7 @@ export default function UniversitiesPage() {
               alignItems: "flex-start",
               gap: 8,
               fontSize: 12,
-              color: C.muted,
+              color: "var(--text-muted)",
             }}
           >
             <Info size={14} style={{ flexShrink: 0, marginTop: 1 }} />
@@ -94,8 +94,8 @@ export default function UniversitiesPage() {
                 gap: 12,
                 padding: "13px 14px",
                 borderRadius: 13,
-                border: `1.5px solid ${C.line}`,
-                background: "#fff",
+                border: `1.5px solid var(--surface-border)`,
+                background: "var(--surface)",
               }}
             >
               <span
@@ -115,14 +115,14 @@ export default function UniversitiesPage() {
                 {idx + 1}
               </span>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: C.ink }}>{u.name}</div>
-                <div style={{ fontSize: 12, color: C.muted }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-strong)" }}>{u.name}</div>
+                <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
                   {REGION_BY_ID[u.regionId][lang]} · {stats.students.toLocaleString()} {t.students}
                 </div>
               </div>
               <div style={{ textAlign: "right", flexShrink: 0 }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: C.emerald }}>{stats.grant}</div>
-                <div style={{ fontSize: 11, color: C.muted }}>{t.grantScore}</div>
+                <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{t.grantScore}</div>
               </div>
             </div>
           ))}
@@ -134,7 +134,7 @@ export default function UniversitiesPage() {
             alignItems: "flex-start",
             gap: 8,
             fontSize: 12,
-            color: C.muted,
+            color: "var(--text-muted)",
           }}
         >
           <Info size={14} style={{ flexShrink: 0, marginTop: 1 }} />

@@ -86,15 +86,15 @@ export default function GoalsPage() {
           rows={3}
           style={{
             width: "100%",
-            border: `1.5px solid ${C.line}`,
+            border: `1.5px solid var(--surface-border)`,
             borderRadius: 13,
             padding: "12px 14px",
             fontSize: 14.5,
             fontFamily: "var(--font-sans)",
             resize: "vertical",
             outline: "none",
-            background: "#F9FAFB",
-            color: C.ink,
+            background: "var(--surface-input)",
+            color: "var(--text-strong)",
           }}
         />
         <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
@@ -110,7 +110,7 @@ export default function GoalsPage() {
       </div>
 
       {loaded && posts.length === 0 && (
-        <div style={{ ...styles.infoCard, textAlign: "center", color: C.muted }}>{t.noRes}</div>
+        <div style={{ ...styles.infoCard, textAlign: "center", color: "var(--text-muted)" }}>{t.noRes}</div>
       )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -133,13 +133,13 @@ export default function GoalsPage() {
               >
                 {post.author.slice(0, 1).toUpperCase()}
               </span>
-              <div style={{ fontWeight: 700, fontSize: 14.5, color: C.ink }}>{post.author}</div>
+              <div style={{ fontWeight: 700, fontSize: 14.5, color: "var(--text-strong)" }}>{post.author}</div>
             </div>
-            <div style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 15, color: C.ink, marginBottom: 14, lineHeight: 1.5 }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 15, color: "var(--text-strong)", marginBottom: 14, lineHeight: 1.5 }}>
               <Target size={16} color={C.violet} style={{ marginTop: 3, flexShrink: 0 }} />
               {post.text}
             </div>
-            <div style={{ display: "flex", gap: 16, borderTop: `1px solid ${C.line}`, paddingTop: 10 }}>
+            <div style={{ display: "flex", gap: 16, borderTop: `1px solid var(--surface-border)`, paddingTop: 10 }}>
               <button
                 onClick={() => toggleLike(post.id)}
                 style={{
@@ -151,12 +151,12 @@ export default function GoalsPage() {
                   cursor: "pointer",
                   fontSize: 13.5,
                   fontWeight: 600,
-                  color: post.liked ? "#EC4899" : C.muted,
+                  color: post.liked ? "#EC4899" : "var(--text-muted)",
                 }}
               >
                 <Heart size={16} fill={post.liked ? "#EC4899" : "none"} /> {post.likeCount} {t.like}
               </button>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5, fontWeight: 600, color: C.muted }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5, fontWeight: 600, color: "var(--text-muted)" }}>
                 <MessageCircle size={16} /> {post.comments.length} {t.comment}
               </div>
             </div>
@@ -164,9 +164,9 @@ export default function GoalsPage() {
             {post.comments.length > 0 && (
               <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
                 {post.comments.map((c) => (
-                  <div key={c.id} style={{ fontSize: 13, background: "#F7F7FD", borderRadius: 10, padding: "8px 12px" }}>
-                    <span style={{ fontWeight: 700, color: C.ink }}>{c.author}: </span>
-                    <span style={{ color: C.muted }}>{c.text}</span>
+                  <div key={c.id} style={{ fontSize: 13, background: "var(--surface-2)", borderRadius: 10, padding: "8px 12px" }}>
+                    <span style={{ fontWeight: 700, color: "var(--text-strong)" }}>{c.author}: </span>
+                    <span style={{ color: "var(--text-muted)" }}>{c.text}</span>
                   </div>
                 ))}
               </div>
@@ -180,13 +180,13 @@ export default function GoalsPage() {
                 placeholder={t.commentPh}
                 style={{
                   flex: 1,
-                  border: `1.5px solid ${C.line}`,
+                  border: `1.5px solid var(--surface-border)`,
                   borderRadius: 11,
                   padding: "9px 12px",
                   fontSize: 13.5,
                   outline: "none",
-                  background: "#F9FAFB",
-                  color: C.ink,
+                  background: "var(--surface-input)",
+                  color: "var(--text-strong)",
                 }}
               />
               <button

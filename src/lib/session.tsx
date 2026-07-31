@@ -8,6 +8,7 @@ export type UserData = {
   email: string;
   firstName: string;
   lastName: string;
+  image: string | null;
   age: number | null;
   regionId: string | null;
   uniName: string | null;
@@ -16,12 +17,15 @@ export type UserData = {
   streak: number;
   points: number;
   lastDay: number;
+  goal: string | null;
+  lastActiveAt: string | null;
 };
 
 const EMPTY: UserData = {
   email: "",
   firstName: "",
   lastName: "",
+  image: null,
   age: null,
   regionId: null,
   uniName: null,
@@ -30,6 +34,8 @@ const EMPTY: UserData = {
   streak: 0,
   points: 0,
   lastDay: 1,
+  goal: null,
+  lastActiveAt: null,
 };
 
 const LANG_KEY = "unistep.lang";
@@ -79,6 +85,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           email: data.email ?? authSession?.user?.email ?? "",
           firstName: data.firstName ?? "",
           lastName: data.lastName ?? "",
+          image: data.image ?? authSession?.user?.image ?? null,
           age: data.age,
           regionId: data.regionId,
           uniName: data.uniName,
@@ -87,6 +94,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           streak: data.streak ?? 0,
           points: data.points ?? 0,
           lastDay: data.lastDay ?? 1,
+          goal: data.goal ?? null,
+          lastActiveAt: data.lastActiveAt ?? null,
         });
       })
       .finally(() => {
@@ -95,7 +104,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [status, authSession?.user?.email, refreshTick]);
+  }, [status, authSession?.user?.email, authSession?.user?.image, refreshTick]);
 
   const setLang = (l: Lang) => {
     setLangState(l);

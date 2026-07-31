@@ -4,10 +4,12 @@ import { ReactNode, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { GraduationCap, LogOut } from "lucide-react";
+import { GraduationCap, LogOut, Moon, Sun } from "lucide-react";
 import { styles } from "@/lib/styles";
+import { C } from "@/lib/tokens";
 import { T } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
+import { useTheme } from "@/lib/theme";
 import LangSwitch from "@/components/LangSwitch";
 
 const TABS = [
@@ -21,6 +23,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, lang, setLang, ready } = useSession();
+  const { theme, toggle } = useTheme();
   const t = T[lang];
 
   useEffect(() => {
@@ -59,6 +62,14 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           })}
         </div>
         <div style={styles.navRight}>
+          <button
+            className="uv-btn-ghost"
+            title={t.themeToggle}
+            style={styles.logoutBtn}
+            onClick={toggle}
+          >
+            {theme === "dark" ? <Sun size={16} color={C.amber} /> : <Moon size={16} />}
+          </button>
           <LangSwitch lang={lang} setLang={setLang} />
           <button className="uv-btn-ghost" style={styles.logoutBtn} onClick={onLogout}>
             <LogOut size={16} /> <span className="uv-hide-sm">{t.logout}</span>
